@@ -1,0 +1,43 @@
+﻿<Window x:Class="GOVI_FACTURA.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GOVI_FACTURA"
+        mc:Ignorable="d"
+        Title="LoginWindow" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen" Icon="/logo-chico.png">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- IZQUIERDA (IMAGEN) -->
+        <Border Background="#111">
+            <Image Source="/logo-chico.png" Stretch="Uniform"/>
+        </Border>
+
+        <!-- DERECHA (LOGIN) -->
+        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+
+            <TextBlock Text="INICIAR SESIÓN" 
+                   Foreground="#FAA219" 
+                   FontSize="22" 
+                   Margin="0,0,0,20"/>
+
+            <TextBox x:Name="txtUsuario" Width="220" Height="30" Margin="5" />
+
+            <PasswordBox x:Name="txtPassword" Width="220" Height="30" Margin="5"/>
+
+            <Button Content="Entrar"
+                Width="220"
+                Height="35"
+                Margin="5"
+                Background="#FAA219"
+                Click="BtnLogin_Click"/>
+
+        </StackPanel>
+    </Grid>
+</Window>

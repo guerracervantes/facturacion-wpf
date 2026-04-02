@@ -14,6 +14,7 @@
     <None Remove="btn_salir2.png" />
     <None Remove="btn_salir_fac.png" />
     <None Remove="buscar_cte.png" />
+    <None Remove="fondo.png" />
     <None Remove="fondo1.png" />
     <None Remove="log-in.png" />
     <None Remove="logo-chico.png" />
@@ -28,6 +29,7 @@
     <Resource Include="btn_salir2.png" />
     <Resource Include="btn_salir_fac.png" />
     <Resource Include="buscar_cte.png" />
+    <Resource Include="fondo.png" />
     <Resource Include="fondo1.png" />
     <Resource Include="log-in.png" />
     <Resource Include="logo-chico.png" />
