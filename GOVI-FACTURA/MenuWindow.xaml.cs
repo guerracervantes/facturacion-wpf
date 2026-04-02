@@ -36,5 +36,10 @@ namespace GOVI_FACTURA
         {
             Application.Current.Shutdown();
         }
+
+        private void BtnCompras_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
