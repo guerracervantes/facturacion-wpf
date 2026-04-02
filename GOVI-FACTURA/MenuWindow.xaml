@@ -8,7 +8,13 @@
         Title="MenuWindow" Height="450" Width="800"
         WindowStartupLocation="CenterScreen" Icon="/logo-chico.png"
         WindowState="Maximized">
-    <Grid Background="#0D0D0D">
+    <Grid>
+
+        <Grid.Background>
+            <ImageBrush ImageSource="/fondo.png"
+                    Stretch="UniformToFill"
+                    Opacity="0.80"/>
+        </Grid.Background>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
