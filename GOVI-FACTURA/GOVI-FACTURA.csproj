@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>GOVI_FACTURA</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="act_fac.png" />
+    <None Remove="btn_salir2.png" />
+    <None Remove="btn_salir_fac.png" />
+    <None Remove="buscar_cte.png" />
+    <None Remove="fondo1.png" />
+    <None Remove="log-in.png" />
+    <None Remove="logo-chico.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="act_fac.png" />
+    <Resource Include="btn_salir2.png" />
+    <Resource Include="btn_salir_fac.png" />
+    <Resource Include="buscar_cte.png" />
+    <Resource Include="fondo1.png" />
+    <Resource Include="log-in.png" />
+    <Resource Include="logo-chico.png" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,263 @@
+﻿<Window x:Class="GOVI_FACTURA.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GOVI Facturación"
+        Height="820"
+        Width="1350"
+        Background="#0D0D0D"
+        WindowStartupLocation="CenterScreen" Icon="/logo-chico.png">
+
+    <Grid Margin="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ================= HEADER ================= -->
+        <Grid Grid.Row="0" Margin="0,0,0,10">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- CLIENTE -->
+            <StackPanel Orientation="Horizontal">
+
+                <TextBlock Text="Cliente:"
+               Foreground="Gray"
+               Margin="5"
+               VerticalAlignment="Center"/>
+
+                <TextBox x:Name="txtCliente"
+             Width="110"
+             Height="30"
+             Margin="5"
+             VerticalAlignment="Center"
+             KeyDown="txtCliente_KeyDown"/>
+
+                <Button Width="110"
+            Height="30"
+            Margin="5"
+            Background="#FAA219"
+            Click="BtnBuscarCliente_Click">
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+
+                        <Image Source="/buscar_cte.png"
+                   Width="16"
+                   Height="16"
+                   Margin="0,0,5,0"/>
+
+                        <TextBlock Text="Buscar"
+                       VerticalAlignment="Center"/>
+
+                    </StackPanel>
+
+                </Button>
+
+            </StackPanel>
+
+            <!-- TIPOS -->
+            <Border Grid.Column="1" Background="#1A1A1A" CornerRadius="10" Padding="10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="120"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <!-- MSI -->
+                    <TextBlock Text="MSI:" Foreground="Gray" Grid.Row="0" Margin="0,2,10,2"/>
+                    <TextBlock x:Name="lblMSI" Foreground="#FAA219" Grid.Row="0" Grid.Column="1" Margin="0,2"/>
+
+                    <!-- CDO2 -->
+                    <TextBlock Text="CDO2:" Foreground="Gray" Grid.Row="1" Margin="0,2,10,2"/>
+                    <TextBlock x:Name="lblCDO2" Foreground="#FAA219" Grid.Row="1" Grid.Column="1" Margin="0,2"/>
+
+                    <!-- Confort -->
+                    <TextBlock Text="Confort:" Foreground="Gray" Grid.Row="2" Margin="0,2,10,2"/>
+                    <TextBlock x:Name="lblConfort" Foreground="#FAA219" Grid.Row="2" Grid.Column="1" Margin="0,2"/>
+
+                    <!-- Buen Fin -->
+                    <TextBlock Text="Buen Fin:" Foreground="Gray" Grid.Row="3" Margin="0,2,10,2"/>
+                    <TextBlock x:Name="lblBuenFin" Foreground="#FAA219" Grid.Row="3" Grid.Column="1" Margin="0,2"/>
+                </Grid>
+            </Border>
+
+            <!-- FOLIO -->
+            <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                <TextBlock Text="Folio" Foreground="Gray"/>
+                <TextBlock x:Name="lblFolio" Foreground="#FAA219" FontSize="18"/>
+                <TextBlock Text="Fecha" Foreground="Gray"/>
+                <TextBlock x:Name="lblFecha" Foreground="White"/>
+            </StackPanel>
+
+        </Grid>
+
+        <!-- ================= CLIENTE + FACTURACION ================= -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- CLIENTE -->
+            <Border Background="#1A1A1A" CornerRadius="10" Padding="10" Margin="5">
+                <StackPanel>
+                    <TextBlock Text="Cliente" Foreground="#FAA219"/>
+                    <TextBlock x:Name="lblClienteNombre" Foreground="White"/>
+                    <TextBlock x:Name="lblClienteRFC" Foreground="Gray"/>
+                    <TextBlock x:Name="lblClienteDireccion" Foreground="#AAAAAA"/>
+                </StackPanel>
+            </Border>
+
+            <!-- FACTURACION -->
+            <Border Grid.Column="1" Background="#1A1A1A" CornerRadius="10" Padding="10" Margin="5">
+
+                <UniformGrid Columns="3">
+
+                    <StackPanel Margin="5">
+                        <TextBlock Text="Forma Pago" Foreground="Gray"/>
+                        <ComboBox x:Name="cmbFormaPago" Height="28"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="5">
+                        <TextBlock Text="Uso CFDI" Foreground="Gray"/>
+                        <ComboBox x:Name="cmbUsoCFDI" Height="28"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="5">
+                        <TextBlock Text="Vendedor" Foreground="Gray"/>
+                        <ComboBox x:Name="cmbVendedor" Height="28"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="5">
+                        <TextBlock Text="Condiciones" Foreground="Gray"/>
+                        <TextBox x:Name="txtCondiciones" Height="28"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="5">
+                        <TextBlock Text="Tipo Venta" Foreground="Gray"/>
+                        <TextBox x:Name="txtTipoVenta" Height="28"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="5">
+                        <TextBlock Text="Crédito" Foreground="Gray"/>
+                        <TextBox x:Name="txtCredito" Height="28"/>
+                    </StackPanel>
+
+                </UniformGrid>
+
+            </Border>
+
+        </Grid>
+
+        <!-- ================= ZONA PRINCIPAL ================= -->
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- PRODUCTOS (PROTAGONISTA 🔥) -->
+            <Border Background="#1A1A1A" CornerRadius="10" Padding="10" Margin="5">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- CAPTURA -->
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Código:" Foreground="Gray" Margin="5"/>
+                        <TextBox x:Name="txtCodigoProducto" Width="250" Height="30" Margin="5"/>
+                        <Button Content="Agregar" Width="100" Margin="5" Background="#FAA219"/>
+                        <Button Content="Buscar" Width="100" Margin="5"/>
+                    </StackPanel>
+
+                    <!-- GRID GRANDE -->
+                    <DataGrid x:Name="dgProductos"
+                              Grid.Row="1"
+                              Background="#1A1A1A"
+                              Foreground="White"
+                              RowHeight="32"/>
+
+                </Grid>
+
+            </Border>
+
+            <!-- LADO DERECHO -->
+            <StackPanel Grid.Column="1" Margin="5">
+
+                <!-- PEDIDOS -->
+                <Border Background="#1A1A1A" CornerRadius="10" Padding="8" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Pedidos Internet" Foreground="#FAA219"/>
+                        <DataGrid x:Name="dgPedidos" Height="120"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- PROMOS -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="4x3" Width="70" Height="40" Margin="5"/>
+                    <Button Content="PM" Width="70" Height="40" Margin="5"/>
+                </StackPanel>
+
+                <!-- TOTALES -->
+                <StackPanel Margin="10">
+
+                    <TextBlock Text="Subtotal" Foreground="Gray"/>
+                    <TextBlock Text="$0.00" Foreground="White"/>
+
+                    <TextBlock Text="Descuento" Foreground="Gray"/>
+                    <TextBlock Text="$0.00" Foreground="White"/>
+
+                    <TextBlock Text="IVA" Foreground="Gray"/>
+                    <TextBlock Text="$0.00" Foreground="White"/>
+
+                    <TextBlock Text="TOTAL" Foreground="#FAA219" Margin="0,10,0,0"/>
+                    <TextBlock Text="$0.00" FontSize="26" Foreground="#FAA219"/>
+
+                </StackPanel>
+
+            </StackPanel>
+
+        </Grid>
+
+        <!-- ================= FOOTER ================= -->
+        <Grid Grid.Row="3" Margin="5">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- MONEDERO -->
+            <StackPanel>
+                <TextBlock Text="Tarjeta" Foreground="Gray"/>
+                <TextBlock Text="100" Foreground="#FAA219"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1">
+                <TextBlock Text="Saldo Disponible" Foreground="Gray"/>
+                <TextBlock Text="1398.72" Foreground="#00FF00"/>
+            </StackPanel>
+
+        </Grid>
+
+    </Grid>
+</Window>
