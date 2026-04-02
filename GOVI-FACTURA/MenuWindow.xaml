@@ -55,7 +55,7 @@
             <!-- BOTONES CENTRALES -->
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                <TextBlock Text="GOVI ERP 2026"
+                <TextBlock Text=""
                        Foreground="#FAA219"
                        FontSize="26"
                        Margin="0,0,0,30"
