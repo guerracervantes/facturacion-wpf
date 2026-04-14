@@ -1,0 +1,49 @@
+ultimo registro 34170 del 1 - abr
+
+-=================================================================  
+-- Autor: Pedro Antonio López Santiago  
+-- Descripcion: Tarea para mantener actualizada la tabla Facturas_MKT_SAP  
+-- Fecha: 06/11/2024  
+--================================================================  
+CREATE PROCEDURE dbo.SP_GUARDA_COMPRAS_SERVICIOS_PUBLICIDAD  
+  
+AS   
+  
+INSERT INTO dbo.MKT_COMPRAS_SERVICIOS_PUBLICIDAD  
+(  
+    iNumCte_mkt,  
+    iNumAlmacenDestino,  
+    strProveedorSap,  
+    strconcepto,  
+    iCuenta_Contable,  
+    iDocumento,  
+    fImporte,  
+    fSubTotal,  
+    fImpuesto,  
+    iSincronizado,  
+ U_INSERTADO_SAP,  
+ dFechaMovimiento  
+)       
+SELECT f.iClienteId, MKT.Almacen_Destino,  mkt.Proveedor_SAP, ctg.strConcepto, ccg.Cuenta_Contable, f.iFacturaId, f.fImporteNeto, f.fSubTotal, f.fImpuesto, 0 AS SINCRONIZADO ,  
+0 AS U_INSERTADO_SAP, F.dFechaMovimiento  
+FROM Facturas_MKT_SAP MKT  
+INNER JOIN FACTURA F ON f.iAlmacenId = mkt.Almacen_Origen AND f.iClienteId = mkt.Cliente   
+INNER JOIN COMPRAS_CLASIFICACION_GASTOS ccg ON F.iAlmacenId = ccg.iAlmacenid AND ccg.IDocumentoid = F.iFacturaId AND ccg.iNumCte_mkt = MKT.Cliente  
+INNER JOIN CATALOGO_TIPO_GASTO ctg ON ccg.iConceptoid = ctg.iConceptoid  
+LEFT JOIN MKT_COMPRAS_SERVICIOS_PUBLICIDAD MSER ON f.iFacturaId = MSER.iDocumento AND f.iClienteId = MSER.iNumCte_mkt AND MSER.iNumAlmacenDestino = mkt.Almacen_Destino  
+WHERE F.bEstado = 0   
+AND  f.dFechaMovimiento >= CONVERT(DATETIME, '2026-03-29 00:00:00', 102)  
+AND MSER.iDocumento IS NULL  
+  
+UNION ALL  
+  
+SELECT R.iClienteId, MKT.Almacen_Destino, MKT.Proveedor_SAP,ctg.strConcepto, ccg.Cuenta_Contable, R.iRemisionId, R.fImporteNeto,R.fSubTotal, R.fImpuesto, 0 AS SINCRONIZADO,  
+0  AS U_INSERTADO_SAP , R.dFechaMovimiento  
+FROM Facturas_MKT_SAP MKT  
+INNER JOIN REMISION R ON mkt.Almacen_Origen = R.iAlmacenId AND R.iClienteId = MKT.Cliente  
+INNER JOIN COMPRAS_CLASIFICACION_GASTOS ccg ON ccg.iAlmacenId = R.iAlmacenid AND ccg.IDocumentoid = R.iRemisionId AND ccg.iNumCte_mkt = MKT.Cliente  
+INNER JOIN CATALOGO_TIPO_GASTO ctg ON ccg.iConceptoid = ctg.iConceptoid  
+LEFT  JOIN dbo.MKT_COMPRAS_SERVICIOS_PUBLICIDAD MSER ON R.iRemisionId = mser.iDocumento AND R.iClienteId = MSER.iNumCte_mkt AND MSER.iNumAlmacenDestino = MKT.Almacen_Destino  
+WHERE  r.bEstado = 0  
+AND R.dFechaMovimiento > = CONVERT(DATETIME, '2026-03-29 00:00:00', 102)  
+AND mser.iDocumento IS NULL

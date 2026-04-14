@@ -1,0 +1,119 @@
+﻿<Window x:Class="GOVI_FACTURA.CapturaClienteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Captura Cliente"
+        Height="520"
+        Width="720"
+        WindowStartupLocation="CenterScreen"
+        Background="#E0E0E0">
+
+    <Grid Margin="15">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- TITULO -->
+        <TextBlock Text="Captura de Cliente Contado"
+                   FontSize="16"
+                   FontWeight="SemiBold"
+                   Foreground="#333"
+                   Margin="5"/>
+
+        <!-- CONTENIDO -->
+        <Border Grid.Row="1"
+                Background="White"
+                CornerRadius="10"
+                Padding="15"
+                BorderBrush="#CCC"
+                BorderThickness="1">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- ===== FILA 1 ===== -->
+                <TextBlock Text="Nombre:" Foreground="#555" VerticalAlignment="Center" FontSize="14" FontWeight="Bold"/>
+                <TextBox x:Name="txtNombre" Grid.Column="1" Height="28" Margin="0,3"/>
+
+                <TextBlock Text="Teléfono:" Grid.Column="2" Foreground="#555" VerticalAlignment="Center" FontSize="14" FontWeight="Bold"/>
+                <TextBox x:Name="txtTelefono" Grid.Column="3" Height="28" Margin="0,3"/>
+
+                <!-- ===== FILA 2 ===== -->
+                <TextBlock Text="Dirección:" Grid.Row="1" Foreground="#555" FontSize="14" FontWeight="Bold"/>
+                <TextBox x:Name="txtDireccion" Grid.Row="1" Grid.Column="1" Height="28" Margin="0,3"/>
+
+                <TextBlock Text="Colonia:" Grid.Row="1" Grid.Column="2" Foreground="#555" FontSize="14" FontWeight="Bold"/>
+                <TextBox x:Name="txtColonia" Grid.Row="1" Grid.Column="3" Height="28" Margin="0,3"/>
+
+                <!-- ===== FILA 3 ===== -->
+                <TextBlock Text="Estado:" Grid.Row="2" Foreground="#555" FontSize="14" FontWeight="Bold"/>
+                <TextBox x:Name="txtEstado" Grid.Row="2" Grid.Column="1" Height="28" Margin="0,3"/>
+
+                <TextBlock Text="C.P:" Grid.Row="2" Grid.Column="2" Foreground="#555" FontSize="14" FontWeight="Bold"/>
+                <TextBox x:Name="txtCP" Grid.Row="2" Grid.Column="3" Height="28" Margin="0,3"/>
+
+                <!-- ===== FILA 4 ===== -->
+                <TextBlock Text="Email:" Grid.Row="3" Foreground="#555" FontSize="14" FontWeight="Bold"/>
+                <TextBox x:Name="txtEmail" Grid.Row="3" Grid.Column="1" Height="28" Margin="0,3"/>
+
+                <!-- ===== FILA 5 ===== -->
+                <TextBlock Text="Razón Social:" Grid.Row="4" Foreground="#555" FontSize="14" FontWeight="Bold"/>
+                <TextBox x:Name="txtRazonSocial"
+                         Grid.Row="4"
+                         Grid.Column="1"
+                         Grid.ColumnSpan="3"
+                         Height="28"
+                         Margin="0,3"/>
+
+                <!-- ===== FILA 6 ===== -->
+                <TextBlock Text="Consignado:" Grid.Row="5" Foreground="#555" FontSize="14" FontWeight="Bold"/>
+                <TextBox x:Name="txtConsignado"
+                         Grid.Row="5"
+                         Grid.Column="1"
+                         Grid.ColumnSpan="3"
+                         Height="28"
+                         Margin="0,3"/>
+
+                <!-- ===== FILA 7 ===== -->
+                <TextBlock Text="Uso CFDI:" Grid.Row="6" Foreground="#555" FontSize="14" FontWeight="Bold"/>
+                <ComboBox x:Name="cmbUsoCFDI" Grid.Row="6" Grid.Column="1" Height="28" Margin="0,3"/>
+
+                <TextBlock Text="Régimen:" Grid.Row="6" Grid.Column="2" Foreground="#555" FontSize="14" FontWeight="Bold"/>
+                <ComboBox x:Name="cmbRegimen" Grid.Row="6" Grid.Column="3" Height="28" Margin="0,3"/>
+
+            </Grid>
+        </Border>
+
+        <!-- BOTON -->
+        <Button Content="Aceptar"
+                Grid.Row="2"
+                Height="35"
+                Width="150"
+                HorizontalAlignment="Right"
+                Margin="0,10,0,0"
+                Background="#FAA219"
+                Foreground="Black"
+                FontWeight="SemiBold"
+                BorderThickness="0"
+                Click="BtnAceptar_Click"/>
+
+    </Grid>
+</Window>
