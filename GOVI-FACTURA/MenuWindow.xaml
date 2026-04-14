@@ -56,11 +56,8 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
 
-                <TextBlock Text=""
-                       Foreground="#FAA219"
-                       FontSize="26"
-                       Margin="0,0,0,30"
-                       HorizontalAlignment="Center"/>
+
+
 
 
                 <UniformGrid Columns="4">
