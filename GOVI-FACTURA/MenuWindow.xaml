@@ -13,7 +13,7 @@
         <Grid.Background>
             <ImageBrush ImageSource="/fondo.png"
                     Stretch="UniformToFill"
-                    Opacity="0.80"/>
+                    Opacity="1"/>
         </Grid.Background>
 
         <Grid.RowDefinitions>
@@ -52,36 +52,258 @@
             <!-- SUBFORM -->
             <ContentControl x:Name="contenedor"/>
 
-            <!-- BOTONES CENTRALES -->
+            <!-- BOTONES CENTRALES-->
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                <TextBlock Text=""
-                       Foreground="#FAA219"
-                       FontSize="26"
-                       Margin="0,0,0,30"
-                       HorizontalAlignment="Center"/>
 
-                <Button Content="Facturación"
-                    Width="220"
-                    Height="50"
-                    Margin="10"
+
+
+
+
+                <UniformGrid Columns="4">
+
+                    <!-- ================= FACTURACION ================= -->
+                    <Grid Width="210" Height="120" Margin="5" Background="Transparent">
+
+                        <Border x:Name="btnFact"
+                    Width="115"
+                    Height="115"
                     Background="#FAA219"
-                    Click="BtnFacturacion_Click"/>
+                    CornerRadius="10"
+                    HorizontalAlignment="Left"
+                    MouseLeftButtonDown="BtnFacturacion_Click">
 
-                <Button Content="Compras"
-                    Width="220"
-                    Height="50"
-                    Margin="10" 
+                            <Border.RenderTransform>
+                                <TranslateTransform x:Name="moveFact"/>
+                            </Border.RenderTransform>
+
+                            <TextBlock Text="Facturación"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           FontSize="13"
+                           Foreground="Black"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"/>
+                        </Border>
+
+                        <UniformGrid x:Name="subFact"
+                         Columns="3"
+                         Rows="3"
+                         Width="105"
+                         Height="105"
+                         Opacity="0"
+                         Visibility="Collapsed"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Center">
+
+                            <Button Width="32" Height="32" Margin="1" Content="🧾"/>
+                            <Button Width="32" Height="32" Margin="1" Content="↩️"/>
+                            <Button Width="32" Height="32" Margin="1" Content="📊"/>
+                            <Button Width="32" Height="32" Margin="1" Content="💰"/>
+                            <Button Width="32" Height="32" Margin="1" Content="📦"/>
+                            <Button Width="32" Height="32" Margin="1" Content="🧮"/>
+                            <Button Width="32" Height="32" Margin="1" Content="📁"/>
+                            <Button Width="32" Height="32" Margin="1" Content="⚙️"/>
+                            <Button Width="32" Height="32" Margin="1" Content="🧠"/>
+
+                        </UniformGrid>
+
+                        <Grid.Triggers>
+
+                            <!-- ENTRA -->
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+
+                                        <!-- 🔥 aparece inmediato -->
+                                        <ObjectAnimationUsingKeyFrames
+                                Storyboard.TargetName="subFact"
+                                Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0"
+                                    Value="{x:Static Visibility.Visible}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+
+                                        <DoubleAnimation
+                                Storyboard.TargetName="subFact"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0" To="1"
+                                Duration="0:0:0.02"/>
+
+                                        <!-- movimiento -->
+                                        <DoubleAnimation
+                                Storyboard.TargetName="moveFact"
+                                Storyboard.TargetProperty="X"
+                                To="-95"
+                                Duration="0:0:0.2"/>
+
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <!-- SALE -->
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+
+                                        <!-- desaparecen primero -->
+                                        <DoubleAnimation
+                                Storyboard.TargetName="subFact"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.08"/>
+
+                                        <ObjectAnimationUsingKeyFrames
+                                Storyboard.TargetName="subFact"
+                                Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.08"
+                                    Value="{x:Static Visibility.Collapsed}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+
+                                        <!-- luego regresa -->
+                                        <DoubleAnimation
+                                Storyboard.TargetName="moveFact"
+                                Storyboard.TargetProperty="X"
+                                To="0"
+                                BeginTime="0:0:0.08"
+                                Duration="0:0:0.2"/>
+
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                        </Grid.Triggers>
+
+                    </Grid>
+
+
+                    <!-- ================= COMPRAS ================= -->
+                    <Grid Width="210" Height="120" Margin="5" Background="Transparent">
+
+                        <Border x:Name="btnCompras"
+                    Width="115"
+                    Height="115"
                     Background="#FAA219"
-                    Click="BtnCompras_Click"/>
+                    CornerRadius="10"
+                    HorizontalAlignment="Left"
+                    MouseLeftButtonDown="BtnCompras_Click">
 
-                <Button Content="Configuración"
-                    Width="220"
-                    Height="50"
-                    Margin="10"/>
+                            <Border.RenderTransform>
+                                <TranslateTransform x:Name="moveCompras"/>
+                            </Border.RenderTransform>
+
+                            <TextBlock Text="Compras"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <UniformGrid x:Name="subCompras"
+                         Columns="3"
+                         Rows="3"
+                         Width="105"
+                         Height="105"
+                         Opacity="0"
+                         Visibility="Collapsed"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Center">
+
+                            <Button Width="32" Height="32" Margin="1"/>
+                            <Button Width="32" Height="32" Margin="1"/>
+                            <Button Width="32" Height="32" Margin="1"/>
+                            <Button Width="32" Height="32" Margin="1"/>
+                            <Button Width="32" Height="32" Margin="1"/>
+                            <Button Width="32" Height="32" Margin="1"/>
+                            <Button Width="32" Height="32" Margin="1"/>
+                            <Button Width="32" Height="32" Margin="1"/>
+                            <Button Width="32" Height="32" Margin="1"/>
+
+                        </UniformGrid>
+
+                        <Grid.Triggers>
+
+                            <!-- ENTRA -->
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+
+                                        <ObjectAnimationUsingKeyFrames
+                                Storyboard.TargetName="subCompras"
+                                Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0"
+                                    Value="{x:Static Visibility.Visible}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+
+                                        <DoubleAnimation
+                                Storyboard.TargetName="subCompras"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0" To="1"
+                                Duration="0:0:0.02"/>
+
+                                        <DoubleAnimation
+                                Storyboard.TargetName="moveCompras"
+                                Storyboard.TargetProperty="X"
+                                To="-95"
+                                Duration="0:0:0.2"/>
+
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <!-- SALE -->
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+
+                                        <DoubleAnimation
+                                Storyboard.TargetName="subCompras"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.08"/>
+
+                                        <ObjectAnimationUsingKeyFrames
+                                Storyboard.TargetName="subCompras"
+                                Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.08"
+                                    Value="{x:Static Visibility.Collapsed}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+
+                                        <DoubleAnimation
+                                Storyboard.TargetName="moveCompras"
+                                Storyboard.TargetProperty="X"
+                                To="0"
+                                BeginTime="0:0:0.08"
+                                Duration="0:0:0.2"/>
+
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                        </Grid.Triggers>
+
+                    </Grid>
+
+
+                    <!-- ================= REPORTES ================= -->
+                    <Grid Width="210" Height="120" Margin="5">
+                        <Border Width="115" Height="115" Background="#FAA219" CornerRadius="10">
+                            <TextBlock Text="Reportes"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+
+
+                    <!-- ================= CONFIG ================= -->
+                    <Grid Width="210" Height="120" Margin="5">
+                        <Border Width="115" Height="115" Background="#FAA219" CornerRadius="10">
+                            <TextBlock Text="Configuración"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+
+                </UniformGrid>
 
             </StackPanel>
-
         </Grid>
 
     </Grid>

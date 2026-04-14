@@ -5,39 +5,104 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GOVI_FACTURA"
         mc:Ignorable="d"
-        Title="LoginWindow" Height="450" Width="800"
+        Title="Sistema ERP de GOVI Ver 1.0" Height="450" Width="400"
         WindowStartupLocation="CenterScreen" Icon="/logo-chico.png">
-    
-    <Grid>
+
+    <Grid Background="White">
+
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="110"/>
+            <ColumnDefinition Width="110"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- IZQUIERDA (IMAGEN) -->
-        <Border Background="#111">
-            <Image Source="/logo-chico.png" Stretch="Uniform"/>
-        </Border>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-        <!-- DERECHA (LOGIN) -->
-        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <!-- LOGO -->
+        <Image Source="/flogin.png"
+               Width="200"
+               Height="180"
+               Grid.Row="2"
+               Grid.Column="1"
+               Grid.ColumnSpan="2">
+            <!-- <Image.Effect>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="3" Opacity="0.5"/>
+            </Image.Effect> -->
+        </Image>
 
-            <TextBlock Text="INICIAR SESIÓN" 
-                   Foreground="#FAA219" 
-                   FontSize="22" 
-                   Margin="0,0,0,20"/>
+        <!-- USUARIO -->
+        <TextBlock Text="Usuario:"
+                   Grid.Column="1"
+                   Grid.Row="4"
+                   Grid.ColumnSpan="2"
+                   Foreground="Gray"
+                   Margin="10,0,0,0"
+                   FontSize="18"
+                   FontWeight="Bold"/>
 
-            <TextBox x:Name="txtUsuario" Width="220" Height="30" Margin="5" />
+        <TextBox x:Name="txtUsuario"
+                 Grid.Column="1"
+                 Grid.Row="5"
+                 Grid.ColumnSpan="2"
+                 Height="30"
+                 Margin="10,0,10,0"
+                 FontWeight="Bold"/>
 
-            <PasswordBox x:Name="txtPassword" Width="220" Height="30" Margin="5"/>
+        <!-- PASSWORD -->
+        <TextBlock Text="Contraseña:"
+                   Grid.Column="1"
+                   Grid.Row="6"
+                   Grid.ColumnSpan="2"
+                   Foreground="Gray"
+                   Margin="10,0,0,0"
+                   FontSize="18"
+                   FontWeight="Bold"/>
 
-            <Button Content="Entrar"
-                Width="220"
-                Height="35"
-                Margin="5"
-                Background="#FAA219"
-                Click="BtnLogin_Click"/>
+        <PasswordBox x:Name="txtPassword"
+                     Grid.Column="1"
+                     Grid.Row="7"
+                     Grid.ColumnSpan="2"
+                     Height="30"
+                     Margin="10,0,10,0"/>
 
-        </StackPanel>
+        <!-- BOTÓN ENTRAR -->
+        <Button Grid.Column="1"
+                Grid.Row="8"
+                Width="90"
+                Height="40"
+                Margin="10"
+                Click="BtnLogin_Click">
+
+            <StackPanel Orientation="Horizontal">
+                <Image Source="/login.png" Width="20" Margin="0,0,5,0"/>
+                <TextBlock Text="ENTRAR" FontWeight="Bold"/>
+            </StackPanel>
+        </Button>
+
+        <!-- BOTÓN SALIR -->
+        <Button Grid.Column="2"
+                Grid.Row="8"
+                Width="90"
+                Height="40"
+                Margin="10"
+                Click="BtnSalir_Click">
+
+            <StackPanel Orientation="Horizontal">
+                <Image Source="/salir.png" Width="20" Margin="0,0,5,0"/>
+                <TextBlock Text="SALIR" FontWeight="Bold" Foreground="Red"/>
+            </StackPanel>
+        </Button>
+
     </Grid>
 </Window>

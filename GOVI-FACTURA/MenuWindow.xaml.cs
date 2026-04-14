@@ -19,16 +19,13 @@ namespace GOVI_FACTURA
     /// </summary>
     public partial class MenuWindow : Window
     {
+        private MainWindow ventanaFacturacion;
         public MenuWindow()
         {
             InitializeComponent();
         }
 
-        private void BtnFacturacion_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow win = new MainWindow();
-            win.Show();
-        }
+        
 
         private void Salir_Click(object sender, RoutedEventArgs e)
         {
@@ -37,8 +34,21 @@ namespace GOVI_FACTURA
 
         private void BtnCompras_Click(object sender, RoutedEventArgs e)
         {
-            ComprasTerceros win = new ComprasTerceros();
-            win.Show();
+
         }
+
+        private void BtnFacturacion_Click(object sender, RoutedEventArgs e)
+        {
+            if (ventanaFacturacion == null || !ventanaFacturacion.IsLoaded)
+            {
+                ventanaFacturacion = new MainWindow();
+                ventanaFacturacion.Show();
+            }
+            else
+            {
+                ventanaFacturacion.Activate(); // la trae al frente
+            }
+        }
+    
     }
 }
