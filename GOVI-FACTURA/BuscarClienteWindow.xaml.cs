@@ -41,7 +41,11 @@ namespace GOVI_FACTURA
         // 🖱️ DOBLE CLICK
         private void dgClientes_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            BtnSeleccionar_Click(sender, e);
+            if (dgClientes.SelectedItem is Cliente cliente)
+            {
+                ClienteSeleccionado = cliente;
+                this.DialogResult = true;
+            }
         }
     }
 }

@@ -15,26 +15,13 @@ using System.Windows.Shapes;
 namespace GOVI_FACTURA
 {
     /// <summary>
-    /// Lógica de interacción para LoginWindow.xaml
+    /// Lógica de interacción para ComprasTerceros.xaml
     /// </summary>
-    public partial class LoginWindow : Window
+    public partial class ComprasTerceros : Window
     {
-        public LoginWindow()
+        public ComprasTerceros()
         {
             InitializeComponent();
-        }
-
-        private void BtnLogin_Click(object sender, RoutedEventArgs e)
-        {
-            MenuWindow menu = new MenuWindow();
-            menu.Show();
-
-            this.Close();
-        }
-
-        private void BtnSalir_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
         }
     }
 }
