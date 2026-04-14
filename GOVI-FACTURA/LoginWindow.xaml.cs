@@ -31,5 +31,10 @@ namespace GOVI_FACTURA
 
             this.Close();
         }
+
+        private void BtnSalir_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }
