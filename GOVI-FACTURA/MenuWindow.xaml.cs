@@ -28,8 +28,6 @@ namespace GOVI_FACTURA
         {
             MainWindow win = new MainWindow();
             win.Show();
-
-            this.Close();
         }
 
         private void Salir_Click(object sender, RoutedEventArgs e)
@@ -39,7 +37,8 @@ namespace GOVI_FACTURA
 
         private void BtnCompras_Click(object sender, RoutedEventArgs e)
         {
-
+            ComprasTerceros win = new ComprasTerceros();
+            win.Show();
         }
     }
 }
