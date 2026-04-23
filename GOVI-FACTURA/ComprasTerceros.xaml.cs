@@ -10,12 +10,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace GOVI_FACTURA
 {
@@ -44,7 +46,7 @@ namespace GOVI_FACTURA
         ObservableCollection<dynamic> Grupos = new ObservableCollection<dynamic>();
         bool cargando = false;
         private bool insertOk = false;
-
+        private bool _skipNextEnterNavigation = false;
 
         public ComprasTerceros()
         {
@@ -57,6 +59,8 @@ namespace GOVI_FACTURA
             cmbDescuento.ItemsSource = new List<int> { 0, 5, 10, 15, 20, 25, 30 , 35 , 40};
             cmbDescuento.SelectedItem = 0;
             dgDetalle.ItemsSource = Detalles;
+            cmbDescuento.SelectionChanged += cmbDescuento_SelectionChanged;
+            cmbIVA.SelectionChanged += cmbIVA_SelectionChanged;
 
             dgOM.ItemsSource = listaOM;
             CargarUnidades();
@@ -139,8 +143,16 @@ namespace GOVI_FACTURA
                         if (proveedorId > 0)
                             query += " AND o.iProveedorId = @ProveedorId";
 
-                        if (dpFecha.SelectedDate != null)
+                        if (chkBusquedaFecha.IsChecked == true)
+                        {
+                            query += " AND o.dFechaOrden BETWEEN @FechaInicio AND @FechaFin";
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(txtFecha.Text) &&
+                            DateTime.TryParse(txtFecha.Text, out DateTime fecha))
+                        {
                             query += " AND MONTH(o.dFechaOrden) = @Mes AND YEAR(o.dFechaOrden) = @Anio";
+                        }
                     }
 
                     query += " ORDER BY o.dFechaOrden DESC";
@@ -148,16 +160,38 @@ namespace GOVI_FACTURA
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         if (!string.IsNullOrWhiteSpace(txtFactura.Text))
+                        {
                             cmd.Parameters.AddWithValue("@OrdenId", txtFactura.Text);
+                        }
                         else
                         {
                             if (proveedorId > 0)
                                 cmd.Parameters.AddWithValue("@ProveedorId", proveedorId);
 
-                            if (dpFecha.SelectedDate != null)
+                            // 🔴 NUEVO: BUSQUEDA POR RANGO DE FECHA
+                            if (chkBusquedaFecha.IsChecked == true)
                             {
-                                cmd.Parameters.AddWithValue("@Mes", dpFecha.SelectedDate.Value.Month);
-                                cmd.Parameters.AddWithValue("@Anio", dpFecha.SelectedDate.Value.Year);
+                                if (dpFechaInicio.SelectedDate == null || dpFechaFin.SelectedDate == null)
+                                {
+                                    MessageBox.Show("Selecciona un rango de fechas");
+                                    return;
+                                }
+
+                                cmd.Parameters.AddWithValue("@FechaInicio", dpFechaInicio.SelectedDate.Value.Date);
+
+                                // 🔥 incluye todo el día final
+                                cmd.Parameters.AddWithValue("@FechaFin",
+                                    dpFechaFin.SelectedDate.Value.Date.AddDays(1).AddSeconds(-1));
+                            }
+                            else
+                            {
+                                // 🔴 TU LÓGICA ORIGINAL
+                                if (!string.IsNullOrWhiteSpace(txtFecha.Text) &&
+                                    DateTime.TryParse(txtFecha.Text, out DateTime fecha))
+                                {
+                                    cmd.Parameters.AddWithValue("@Mes", fecha.Month);
+                                    cmd.Parameters.AddWithValue("@Anio", fecha.Year);
+                                }
                             }
                         }
 
@@ -234,8 +268,14 @@ namespace GOVI_FACTURA
         {
             try
             {
-                dpFecha.SelectedDate = null;
-                dpFechaLlegada.SelectedDate = null;
+                // 🔥 LIMPIAR ESTADO ANTERIOR DE BÚSQUEDA
+                txtFactura.Text = "";
+                txtAutorizacion.Text = "";
+
+                txtFecha.Text = "";
+                txtFechaLlegada.Text = "";
+
+                dgDetalle.SelectedIndex = -1; // 🔥 clave para no arrastrar selección
 
                 int proveedorId = 0;
 
@@ -250,9 +290,9 @@ namespace GOVI_FACTURA
                     int.TryParse(txtProveedorId.Text, out proveedorId);
                 }
 
-                if (proveedorId == 0)
+                if (proveedorId == 0 && chkBusquedaFecha.IsChecked != true)
                 {
-                    MessageBox.Show("Selecciona o escribe un proveedor válido");
+                    MessageBox.Show("Selecciona un proveedor o usa búsqueda por fecha");
                     return;
                 }
 
@@ -262,6 +302,25 @@ namespace GOVI_FACTURA
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
+        }
+        private void chkBusquedaFecha_Checked(object sender, RoutedEventArgs e)
+        {
+            if (modoActual != ModoPantalla.Busqueda)
+                return;
+
+            panelFechaInicio.Visibility = Visibility.Visible;
+            panelFechaFin.Visibility = Visibility.Visible;
+
+            panelDescuento.Visibility = Visibility.Collapsed;
+            panelIVA.Visibility = Visibility.Collapsed;
+        }
+        private void chkBusquedaFecha_Unchecked(object sender, RoutedEventArgs e)
+        {
+            panelFechaInicio.Visibility = Visibility.Collapsed;
+            panelFechaFin.Visibility = Visibility.Collapsed;
+
+            dpFechaInicio.SelectedDate = null;
+            dpFechaFin.SelectedDate = null;
         }
 
 
@@ -309,8 +368,8 @@ namespace GOVI_FACTURA
 
                 // Llenar los TextBox solo cuando el usuario seleccione la fila
                 txtAutorizacion.Text = fila.Autorizacion;
-                dpFecha.SelectedDate = fila.FechaOrden;
-                dpFechaLlegada.SelectedDate = fila.FechaLlegada;
+                txtFecha.Text = fila.FechaOrden?.ToString("yyyy-MM-dd") ?? "";
+                txtFechaLlegada.Text = fila.FechaLlegada?.ToString("yyyy-MM-dd") ?? "";
                 txtFactura.Text = fila.OrdenId.ToString(); 
             }
         }
@@ -398,39 +457,194 @@ namespace GOVI_FACTURA
                 Venta = venta,
                 Cantidad = cantidad,
                 Autorizacion = txtAutorizacion.Text,
-                FechaOrden = dpFecha.SelectedDate,
-                FechaLlegada = dpFechaLlegada.SelectedDate
+                FechaOrden = null,
+                FechaLlegada = null
             };
+        }
+        private ObservableCollection<dynamic> ObtenerMarcasPorProducto(string productoId)
+        {
+            var lista = new ObservableCollection<dynamic>();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand(@"
+            SELECT DISTINCT 
+                m.iMarcaId, 
+                m.strDescripcion
+            FROM PRECIO p
+            INNER JOIN MARCA m ON m.iMarcaId = p.iMarcaId
+            WHERE p.strProductoId = @ProductoId
+        ", conn);
+
+                cmd.Parameters.AddWithValue("@ProductoId", productoId);
+
+                var dr = cmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    lista.Add(new
+                    {
+                        iMarcaId = Convert.ToInt32(dr["iMarcaId"]),
+                        strDescripcion = dr["strDescripcion"].ToString()
+                    });
+                }
+            }
+
+            return lista;
+        }
+        private static T FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+
+                if (child is T t)
+                    return t;
+
+                var result = FindVisualChild<T>(child);
+                if (result != null)
+                    return result;
+            }
+            return null;
         }
         private void dgDetalle_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             var detalle = e.Row.Item as DetalleOrden;
             if (detalle == null) return;
 
-            // 🔹 CUANDO EDITAS PRODUCTO
-            if (e.Column.Header.ToString() == "Producto" && !string.IsNullOrEmpty(detalle.Producto) && detalle.Marca > 0)
+            // =========================
+            // 🔹 PRODUCTO
+            // =========================
+            if (e.Column.Header.ToString() == "Producto")
             {
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
+                    if (string.IsNullOrEmpty(detalle.Producto)) return;
+
+                    detalle.MarcasDisponibles = ObtenerMarcasPorProducto(detalle.Producto);
+
+                    if (detalle.MarcasDisponibles != null && detalle.MarcasDisponibles.Count > 0)
+                    {
+                        // =========================
+                        // ✔ SOLO UNA MARCA
+                        // =========================
+                        if (detalle.MarcasDisponibles.Count == 1)
+                        {
+                            detalle.Marca = detalle.MarcasDisponibles[0].iMarcaId;
+
+                            var datos = ObtenerDetalleProducto(detalle.Producto, detalle.Marca, detalle.Cantidad);
+
+                            if (datos != null)
+                            {
+                                detalle.Descripcion = datos.Descripcion;
+                                detalle.PrecioAnterior = datos.PrecioAnterior;
+                                detalle.Localizacion = datos.Localizacion;
+                                detalle.Venta = datos.Venta;
+
+                                detalle.Costo = 0;
+                                detalle.Importe = 0;
+                                detalle.PrecioNuevo = 0;
+                            }
+
+                            CalcularTotales();
+
+                            Dispatcher.BeginInvoke(new Action(() =>
+                            {
+                                dgDetalle.SelectedItem = detalle;
+
+                                dgDetalle.CurrentCell = new DataGridCellInfo(
+                                    detalle,
+                                    dgDetalle.Columns[2]); // Cantidad
+
+                            }), DispatcherPriority.Loaded);
+                        }
+                        // =========================
+                        // ✔ VARIAS MARCAS
+                        // =========================
+                        else
+                        {
+                            detalle.Marca = 0;
+
+                            dgDetalle.Items.Refresh();
+                            CalcularTotales();
+
+                            // 🔥 IR A COMBOBOX MARCA
+                            Dispatcher.BeginInvoke(new Action(() =>
+                            {
+                                int marcaIndex = 2; // ajusta si tu columna es diferente
+
+                                dgDetalle.CurrentCell = new DataGridCellInfo(
+                                    detalle,
+                                    dgDetalle.Columns[marcaIndex]);
+
+                                dgDetalle.BeginEdit();
+
+                                var row = dgDetalle.ItemContainerGenerator.ContainerFromItem(detalle) as DataGridRow;
+
+                                if (row != null)
+                                {
+                                    row.ApplyTemplate();
+
+                                    var cell = dgDetalle.Columns[marcaIndex].GetCellContent(row);
+
+                                    if (cell != null)
+                                    {
+                                        var combo = FindVisualChild<ComboBox>(cell);
+
+                                        if (combo != null)
+                                        {
+                                            combo.IsDropDownOpen = true;
+                                            combo.Focus();
+                                        }
+                                    }
+                                }
+
+                            }), System.Windows.Threading.DispatcherPriority.Background);
+                        }
+                    }
+
+                }), System.Windows.Threading.DispatcherPriority.Background);
+            }
+            // =========================
+            // 🔹 MARCA
+            // =========================
+            if (e.Column.Header.ToString() == "Marca")
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    // 🔥 SI NO SE SELECCIONÓ NADA → TOMAR PRIMERA MARCA
+                    if (detalle.Marca == 0 &&
+                        detalle.MarcasDisponibles != null &&
+                        detalle.MarcasDisponibles.Count > 0)
+                    {
+                        detalle.Marca = detalle.MarcasDisponibles[0].iMarcaId;
+                    }
+
                     var datos = ObtenerDetalleProducto(detalle.Producto, detalle.Marca, detalle.Cantidad);
+
                     if (datos != null)
                     {
                         detalle.Descripcion = datos.Descripcion;
-                        detalle.PrecioAnterior = datos.PrecioAnterior; // 🔥 IMPORTANTE
-                        detalle.Costo = 0; // usuario lo captura
-                        detalle.Importe = 0;
+                        detalle.PrecioAnterior = datos.PrecioAnterior;
                         detalle.Localizacion = datos.Localizacion;
                         detalle.Venta = datos.Venta;
-                        detalle.Cantidad = datos.Cantidad;
+
+                        detalle.Costo = 0;
+                        detalle.Importe = 0;
                         detalle.PrecioNuevo = 0;
                     }
 
-                    dgDetalle.Items.Refresh();
+                    dgDetalle.CommitEdit(DataGridEditingUnit.Cell, true);
+                    dgDetalle.CommitEdit(DataGridEditingUnit.Row, true);
+
                     CalcularTotales();
                 }), System.Windows.Threading.DispatcherPriority.Background);
             }
-
-            // 🔹 CUANDO EDITAS COSTO (🔥 ESTE VA FUERA)
+            // =========================
+            // 🔹 COSTO
+            // =========================
             if (e.Column.Header.ToString() == "Costo")
             {
                 Dispatcher.BeginInvoke(new Action(() =>
@@ -440,6 +654,7 @@ namespace GOVI_FACTURA
 
                     dgDetalle.Items.Refresh();
                     CalcularTotales();
+
                 }), System.Windows.Threading.DispatcherPriority.Background);
             }
         }
@@ -476,6 +691,11 @@ namespace GOVI_FACTURA
         }
         private void dgDetalle_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if (_skipNextEnterNavigation)
+            {
+                _skipNextEnterNavigation = false;
+                return;
+            }
             if (e.Key != Key.Enter) return;
 
             var grid = sender as DataGrid;
@@ -522,6 +742,29 @@ namespace GOVI_FACTURA
                     grid.BeginEdit();
                 }
 
+            }), System.Windows.Threading.DispatcherPriority.Background);
+        }
+        private void BtnEliminarFila_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            if (btn == null) return;
+
+            var detalle = btn.DataContext as DetalleOrden;
+            if (detalle == null) return;
+
+            var lista = dgDetalle.ItemsSource as ObservableCollection<DetalleOrden>;
+            if (lista == null) return;
+
+            // 🔥 CERRAR EDICIÓN ACTIVA
+            dgDetalle.CommitEdit(DataGridEditingUnit.Cell, true);
+            dgDetalle.CommitEdit(DataGridEditingUnit.Row, true);
+
+            lista.Remove(detalle);
+
+            // 🔥 AHORA SÍ recalcula seguro
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                CalcularTotales();
             }), System.Windows.Threading.DispatcherPriority.Background);
         }
         private void CalcularTotales()
@@ -573,8 +816,89 @@ namespace GOVI_FACTURA
 
             dgDetalle.Items.Refresh();
         }
+        private void cmbDescuento_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded) return;
+            CalcularTotales();
+        }
+        private void cmbIVA_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded) return;
+            CalcularTotales();
+        }
+        private bool ValidarOrden(out int proveedorId)
+        {
+            proveedorId = 0;
+
+            // 🔹 PROVEEDOR
+            if (!int.TryParse(txtProveedorId.Text, out proveedorId) || proveedorId <= 0)
+            {
+                MessageBox.Show("Proveedor inválido");
+                return false;
+            }
+
+            // 🔹 DETALLES
+            if (Detalles == null || Detalles.Count == 0)
+            {
+                MessageBox.Show("Agrega al menos un producto a la orden");
+                return false;
+            }
+
+            // 🔹 VALIDAR CADA FILA
+            int fila = 1;
+            foreach (var d in Detalles)
+            {
+                if (string.IsNullOrWhiteSpace(d.Producto))
+                {
+                    MessageBox.Show($"Producto vacío en la fila {fila}");
+                    return false;
+                }
+
+                if (d.Marca <= 0)
+                {
+                    MessageBox.Show($"Marca inválida en la fila {fila}");
+                    return false;
+                }
+                if (d.Importe <= 0)
+                {
+                    MessageBox.Show($"Importe inválido en la fila {fila}");
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(d.Descripcion))
+                {
+                    MessageBox.Show($"Descripción vacía en la fila {fila}");
+                    return false;
+                }
+                if (d.Cantidad <= 0)
+                {
+                    MessageBox.Show($"Cantidad inválida en la fila {fila}");
+                    return false;
+                }
+
+                if (d.Costo <= 0)
+                {
+                    MessageBox.Show($"Costo inválido en la fila {fila}");
+                    return false;
+                }
+
+                fila++;
+            }
+
+            // 🔹 TOTALES
+            if (!decimal.TryParse(txtTotal.Text, out decimal total) || total <= 0)
+            {
+                MessageBox.Show("Total inválido");
+                return false;
+            }
+
+            return true;
+        }
         private void GuardarOrden()
         {
+            if (!ValidarOrden(out int proveedorId))
+                return;
+
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -582,19 +906,30 @@ namespace GOVI_FACTURA
 
                 try
                 {
-                    // 🔥 VALIDAR PROVEEDOR
-                    if (!int.TryParse(txtProveedorId.Text, out int proveedorId))
-                    {
-                        MessageBox.Show("Proveedor inválido");
-                        return;
-                    }
+                    // 🔥 FECHA AUTOMÁTICA
+                    DateTime fechaActual = DateTime.Now;
+                    txtFecha.Text = fechaActual.ToString("yyyy-MM-dd");
+                    txtFechaLlegada.Text = fechaActual.ToString("yyyy-MM-dd");
+                    DateTime fechaLlegada = fechaActual;
 
                     // 🔥 VALIDAR TOTALES
-                    decimal subTotal = Convert.ToDecimal(txtSubTotal.Text);
-                    decimal iva = Convert.ToDecimal(txtIVAImporte.Text);
-                    decimal total = Convert.ToDecimal(txtTotal.Text);
-                    decimal retencion = Convert.ToDecimal(txtRetencion.Text);
-                    decimal descuento = Convert.ToDecimal(txtDescuento.Text);
+                    if (!decimal.TryParse(txtSubTotal.Text, out decimal subTotal))
+                        throw new Exception("Subtotal inválido");
+
+                    if (!decimal.TryParse(txtSubTotalFinal.Text, out decimal subTotalFinal))
+                        throw new Exception("subTotalFinal inválido");
+
+                    if (!decimal.TryParse(txtIVAImporte.Text, out decimal iva))
+                        throw new Exception("IVA inválido");
+
+                    if (!decimal.TryParse(txtTotal.Text, out decimal total))
+                        throw new Exception("Total inválido");
+
+                    if (!decimal.TryParse(txtRetencion.Text, out decimal retencion))
+                        throw new Exception("Retención inválida");
+
+                    if (!decimal.TryParse(txtDescuento.Text, out decimal descuento))
+                        throw new Exception("Descuento inválido");
 
                     // 🔥 GENERAR NUEVO ID (CON BLOQUEO PARA EVITAR DUPLICADOS)
                     SqlCommand cmdNextId = new SqlCommand(@"
@@ -611,10 +946,10 @@ namespace GOVI_FACTURA
                     cmdEnc.Parameters.AddWithValue("@iOrdenId", nuevoOrdenId);
                     cmdEnc.Parameters.AddWithValue("@iProveedorId", proveedorId);
                     cmdEnc.Parameters.AddWithValue("@iRequisicion", 0);
-                    cmdEnc.Parameters.AddWithValue("@fSubTotal", subTotal);
+                    cmdEnc.Parameters.AddWithValue("@fSubTotal", subTotalFinal);
                     cmdEnc.Parameters.AddWithValue("@fImpuesto", iva);
                     cmdEnc.Parameters.AddWithValue("@fTotal", total);
-                    cmdEnc.Parameters.AddWithValue("@dfechallegada", dpFechaLlegada.SelectedDate ?? DateTime.Now);
+                    cmdEnc.Parameters.AddWithValue("@dfechallegada", fechaLlegada); 
                     cmdEnc.Parameters.AddWithValue("@strAutorizacion", txtAutorizacion.Text ?? "");
                     cmdEnc.Parameters.AddWithValue("@iFacturaProveedorid", 0);
                     cmdEnc.Parameters.AddWithValue("@fRetencion", retencion);
@@ -674,7 +1009,7 @@ namespace GOVI_FACTURA
                         cmdDet.Parameters.AddWithValue("@fImporte", detalle.Importe);
                         cmdDet.Parameters.AddWithValue("@strlocalizacionId", detalle.Localizacion ?? "");
 
-                        cmdDet.Parameters.AddWithValue("@descripcion_producto", detalle.Producto ?? "");
+                        cmdDet.Parameters.AddWithValue("@descripcion_producto", detalle.Descripcion);
                         cmdDet.Parameters.AddWithValue("@fprecionuevo", detalle.PrecioNuevo);
                         cmdDet.Parameters.AddWithValue("@iServicio", 0);
                         cmdDet.Parameters.AddWithValue("@iFamilia", 0);
@@ -687,12 +1022,12 @@ namespace GOVI_FACTURA
                         cmdDet.Parameters.AddWithValue("@iInventarioCedis", 0);
                         cmdDet.Parameters.AddWithValue("@strProductoProveedorid", "");
 
-                        cmdDet.Parameters.AddWithValue("@fRetencion", 0);
+                        cmdDet.Parameters.AddWithValue("@fRetencion", detalle.Retencion);
                         cmdDet.Parameters.AddWithValue("@iStatus", "");
                         cmdDet.Parameters.AddWithValue("@iFacturaProveedorid", 0);
-                        cmdDet.Parameters.AddWithValue("@fDescuento", 0);
+                        cmdDet.Parameters.AddWithValue("@fDescuento", detalle.Descuento);
                         cmdDet.Parameters.AddWithValue("@fsubtotalsinDescuento", detalle.Importe);
-                        cmdDet.Parameters.AddWithValue("@fImpuesto", 0);
+                        cmdDet.Parameters.AddWithValue("@fImpuesto", detalle.Impuesto);
 
                         cmdDet.ExecuteNonQuery();
                     }
@@ -771,7 +1106,7 @@ namespace GOVI_FACTURA
             int col = grid.CurrentCell.Column.DisplayIndex;
             var item = grid.CurrentItem as ProductoOM;
 
-            // 🔥 VALIDAR SOLO CUANDO ESTÁ EN COLUMNA PRODUCTO (0)
+            // 🔥 VALIDAR SOLO EN PRODUCTO
             if (col == 0)
             {
                 if (item != null && !string.IsNullOrWhiteSpace(item.Producto))
@@ -780,27 +1115,29 @@ namespace GOVI_FACTURA
                     {
                         MessageBox.Show("⚠ Este producto ya existe en la base de datos");
 
-                        // 🔥 LIMPIAR LA FILA
                         item.Producto = "";
                         item.Descripcion = "";
-                        item.Marca = "";
-                        item.Precio = 0;
 
                         grid.CommitEdit(DataGridEditingUnit.Cell, true);
                         grid.BeginEdit();
-
-                        return; // 🔥 se detiene aquí
+                        return;
                     }
                 }
+
+                // 👉 IR A DESCRIPCIÓN
+                grid.CurrentCell = new DataGridCellInfo(item, grid.Columns[1]);
+                grid.BeginEdit();
+                return;
             }
 
-            // 🔥 SI ESTÁ EN ÚLTIMA COLUMNA (Precio antes de Acción)
-            if (col >= grid.Columns.Count - 2)
+            // 🔥 DESCRIPCIÓN → BAJAR A NUEVA FILA
+            if (col == 1)
             {
                 grid.CommitEdit(DataGridEditingUnit.Row, true);
 
                 grid.SelectedIndex += 1;
 
+                // 🔥 SI NO EXISTE FILA, WPF LA CREA
                 grid.CurrentCell = new DataGridCellInfo(
                     grid.Items[grid.SelectedIndex],
                     grid.Columns[0]);
@@ -808,14 +1145,6 @@ namespace GOVI_FACTURA
                 grid.BeginEdit();
                 return;
             }
-
-            // 👉 mover a siguiente columna
-            int nextCol = col + 1;
-
-            var column = grid.Columns[nextCol];
-
-            grid.CurrentCell = new DataGridCellInfo(grid.SelectedItem, column);
-            grid.BeginEdit();
         }
         private void AgregarFila_Click(object sender, RoutedEventArgs e)
         {
@@ -833,10 +1162,6 @@ namespace GOVI_FACTURA
 
             if (cmbGrupoOM.SelectedValue != null)
                 item.GrupoId = Convert.ToInt32(cmbGrupoOM.SelectedValue);
-
-            // 🔥 DEBUG (IMPORTANTE)
-            MessageBox.Show(
-                $"Unidad: {item.UnidadId}\nFamilia: {item.FamiliaId}\nGrupo: {item.GrupoId}");
 
             if (!ValidarProducto(item))
                 return;
@@ -945,46 +1270,69 @@ namespace GOVI_FACTURA
             if (string.IsNullOrWhiteSpace(item.Producto))
             {
                 MessageBox.Show("Falta el código del producto");
+                dgOM.Focus();
+                dgOM.CurrentCell = new DataGridCellInfo(item, dgOM.Columns[0]);
+                dgOM.BeginEdit();
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(item.Descripcion))
             {
                 MessageBox.Show("Falta la descripción");
+                dgOM.Focus();
+                dgOM.CurrentCell = new DataGridCellInfo(item, dgOM.Columns[1]);
+                dgOM.BeginEdit();
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(item.Marca))
             {
                 MessageBox.Show("Falta la marca");
+                dgOM.Focus();
+                dgOM.CurrentCell = new DataGridCellInfo(item, dgOM.Columns[2]);
+                dgOM.BeginEdit();
                 return false;
             }
 
             if (item.Precio <= 0)
             {
                 MessageBox.Show("El precio debe ser mayor a 0");
+                dgOM.Focus();
+                dgOM.CurrentCell = new DataGridCellInfo(item, dgOM.Columns[3]);
+                dgOM.BeginEdit();
                 return false;
             }
 
+            // 🔥 UNIDAD
             if (item.UnidadId <= 0)
             {
                 MessageBox.Show("Selecciona una unidad");
+                AbrirCombo(cmbUnidadOM);
                 return false;
             }
 
+            // 🔥 FAMILIA
             if (item.FamiliaId <= 0)
             {
                 MessageBox.Show("Selecciona una familia");
+                AbrirCombo(cmbFamiliaOM);
                 return false;
             }
 
+            // 🔥 GRUPO
             if (item.GrupoId <= 0)
             {
                 MessageBox.Show("Selecciona un grupo");
+                AbrirCombo(cmbGrupoOM);
                 return false;
             }
 
             return true;
+        }
+        private void AbrirCombo(ComboBox combo)
+        {
+            combo.Focus();
+            combo.IsDropDownOpen = true;
         }
         private void CargarUnidades()
         {
@@ -1082,7 +1430,7 @@ namespace GOVI_FACTURA
                 borderLow1.BorderBrush = new SolidColorBrush(Color.FromRgb(250, 162, 25));
                 borderLow2.BorderBrush = new SolidColorBrush(Color.FromRgb(250, 162, 25));
                 borderLow3.BorderBrush = new SolidColorBrush(Color.FromRgb(250, 162, 25));
-                this.Background = new SolidColorBrush(Color.FromRgb(255, 243, 200));
+                this.Background = new SolidColorBrush(Color.FromRgb(0, 0, 0));
 
                 gridOMPanel.Visibility = Visibility.Collapsed;
 
@@ -1094,17 +1442,27 @@ namespace GOVI_FACTURA
 
                 panelDescuento.Visibility = Visibility.Collapsed;
                 panelIVA.Visibility = Visibility.Collapsed;
+
+                colEliminar.Visibility = Visibility.Collapsed;
+
+                panelBusquedaOpciones.Visibility = Visibility.Visible;
+
+                if (chkBusquedaFecha.IsChecked != true)
+                {
+                    panelFechaInicio.Visibility = Visibility.Collapsed;
+                    panelFechaFin.Visibility = Visibility.Collapsed;
+                }
             }
             else
             {
 
-                borderTop.BorderBrush = new SolidColorBrush(Color.FromRgb(76, 175, 80));
-                borderMiddleTop.BorderBrush = new SolidColorBrush(Color.FromRgb(76, 175, 80));
-                borderMiddleLow.BorderBrush = new SolidColorBrush(Color.FromRgb(76, 175, 80));
-                borderLow1.BorderBrush = new SolidColorBrush(Color.FromRgb(76, 175, 80));
-                borderLow2.BorderBrush = new SolidColorBrush(Color.FromRgb(76, 175, 80));
-                borderLow3.BorderBrush = new SolidColorBrush(Color.FromRgb(76, 175, 80));
-                this.Background = new SolidColorBrush(Color.FromRgb(210, 255, 210));
+                borderTop.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 180, 180));
+                borderMiddleTop.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 180, 180));
+                borderMiddleLow.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 180, 180));
+                borderLow1.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 180, 180));
+                borderLow2.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 180, 180));
+                borderLow3.BorderBrush = new SolidColorBrush(Color.FromRgb(180, 180, 180));
+                this.Background = new SolidColorBrush(Color.FromRgb(0, 0, 0));
 
                 gridOMPanel.Visibility = Visibility.Visible;
 
@@ -1112,10 +1470,18 @@ namespace GOVI_FACTURA
 
                 btnBusqueda.Visibility = Visibility.Collapsed;
                 btnGuardar.Visibility = Visibility.Visible;
-                btnCalcular.Visibility = Visibility.Visible;
+                btnCalcular.Visibility = Visibility.Collapsed;
 
                 panelDescuento.Visibility = Visibility.Visible;
                 panelIVA.Visibility = Visibility.Visible;
+
+                colEliminar.Visibility = Visibility.Visible;
+
+                panelBusquedaOpciones.Visibility = Visibility.Collapsed;
+
+                panelFechaInicio.Visibility = Visibility.Collapsed;
+                panelFechaFin.Visibility = Visibility.Collapsed;
+
             }
         }
         private void LimpiarTodo()
@@ -1142,9 +1508,9 @@ namespace GOVI_FACTURA
             if (cmbDescuento != null) cmbDescuento.SelectedItem = 0;
             if (cmbIVA != null) cmbIVA.SelectedItem = 16;
 
-            // 🔹 DatePicker
-            if (dpFecha != null) dpFecha.SelectedDate = null;
-            if (dpFechaLlegada != null) dpFechaLlegada.SelectedDate = null;
+            // 🔹 Fechas
+            if (txtFecha != null) txtFecha.Text = "";
+            if (txtFechaLlegada != null) txtFechaLlegada.Text = "";
 
             // 🔹 Totales
             if (txtSubTotal != null) txtSubTotal.Text = "0.00";
@@ -1171,6 +1537,7 @@ namespace GOVI_FACTURA
     {
         public string Producto { get; set; } = "";
         public int Marca { get; set; }
+        public ObservableCollection<dynamic> MarcasDisponibles { get; set; } = new ObservableCollection<dynamic>();
         public string Descripcion { get; set; } = "";
         public int Cantidad { get; set; }
         public decimal Costo { get; set; }
@@ -1194,13 +1561,13 @@ namespace GOVI_FACTURA
         public string Producto { get; set; } = "";
         public string Descripcion { get; set; } ="";
 
-        public string Marca { get; set; } = "";
+        public string Marca { get; set; } = "88";
 
         public decimal Costo { get; set; }
         public decimal CostoMayoreo { get; set; }
         public decimal CostoMexico { get; set; }
 
-        public decimal Precio { get; set; }
+        public decimal Precio { get; set; } = 1;
         public decimal PrecioMayoreo { get; set; }
 
         public decimal Dolar { get; set; }

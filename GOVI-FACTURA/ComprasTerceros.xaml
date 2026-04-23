@@ -243,7 +243,7 @@
         
         <!-- 🔹 BOTONES -->
         <Border x:Name="borderTop" Grid.Row="0"
-        Background="#111"
+        Background="{StaticResource ColorGrisOscuro}"
         BorderBrush="#FAA219"
         BorderThickness="2"
         CornerRadius="8"
@@ -259,18 +259,36 @@
 
                     <RadioButton Content="🔎 Búsqueda"
                          GroupName="Modo"
-                         Foreground="White"
+                         Foreground="#EAE6DD"
                          Margin="0,0,15,0"
                          IsChecked="True"
                          Checked="ModoBusqueda_Checked"/>
 
                     <RadioButton Content="💾 Captura"
                          GroupName="Modo"
-                         Foreground="White"
+                         Foreground="#EAE6DD"
                          Checked="ModoCaptura_Checked"/>
 
                 </StackPanel>
+                <!-- 🔹 CHECKBOX CENTRO -->
+                <StackPanel x:Name="panelBusquedaOpciones"
+            Orientation="Horizontal"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Visibility="Collapsed">
 
+                    <CheckBox x:Name="chkImpresion"
+              Content="Impresión"
+              Foreground="White"
+              Margin="0,0,20,0"/>
+
+                    <CheckBox x:Name="chkBusquedaFecha"
+              Content="Búsqueda por fecha"
+              Foreground="White"
+              Checked="chkBusquedaFecha_Checked"
+              Unchecked="chkBusquedaFecha_Unchecked"/>
+
+                </StackPanel>
                 <!-- 🔘 BOTONES (a la derecha) -->
                 <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
@@ -308,7 +326,7 @@
         CornerRadius="8"
         Padding="15"
         Margin="0,0,0,15"
-        Background="#111">
+        Background="{StaticResource ColorGrisOscuro}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -342,14 +360,19 @@
 
                 <StackPanel Grid.Row="0" Grid.Column="2">
                     <TextBlock Text="Fecha"/>
-                    <DatePicker x:Name="dpFecha"/>
+                    <TextBox x:Name="txtFecha" IsReadOnly="True"/>
                 </StackPanel>
 
                 <StackPanel x:Name="panelDescuento" Grid.Row="0" Grid.Column="3">
                     <TextBlock Text="Descuento (%)"/>
-                    <ComboBox x:Name="cmbDescuento"/>
+                    <ComboBox x:Name="cmbDescuento" SelectionChanged="cmbDescuento_SelectionChanged"/>
                 </StackPanel>
-
+                
+                <StackPanel x:Name="panelFechaInicio" Grid.Row="0" Grid.Column="3" Visibility="Collapsed">
+                    <TextBlock Text="Fecha Inicio"/>
+                    <DatePicker x:Name="dpFechaInicio"/>
+                </StackPanel>
+                
                 <!-- FILA 2 -->
 
                 <StackPanel Grid.Row="1" Grid.Column="0">
@@ -364,14 +387,19 @@
 
                 <StackPanel Grid.Row="1" Grid.Column="2">
                     <TextBlock Text="Fecha Llegada"/>
-                    <DatePicker x:Name="dpFechaLlegada"/>
+                    <TextBox x:Name="txtFechaLlegada" IsReadOnly="True"/>
                 </StackPanel>
 
                 <StackPanel x:Name="panelIVA" Grid.Row="1" Grid.Column="3">
                     <TextBlock Text="IVA (%)"/>
-                    <ComboBox x:Name="cmbIVA" />
+                    <ComboBox x:Name="cmbIVA" SelectionChanged="cmbIVA_SelectionChanged"/>
                 </StackPanel>
-
+                
+                <StackPanel x:Name="panelFechaFin" Grid.Row="1" Grid.Column="3" Visibility="Collapsed">
+                    <TextBlock Text="Fecha Fin"/>
+                    <DatePicker x:Name="dpFechaFin"/>
+                </StackPanel>
+                
             </Grid>
         </Border>
         
@@ -383,7 +411,7 @@
         CornerRadius="8"
         Padding="10"
         Margin="0,0,0,15"
-        Background="#111">
+        Background="{StaticResource ColorGrisOscuro}">
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -409,7 +437,29 @@
 
                         <DataGridTextColumn Header="Producto" Binding="{Binding Producto}" Width="100"/>
                         <DataGridTextColumn Header="Código Proveedor" Binding="{Binding CodigoProveedor}" Width="120"/>
-                        <DataGridTextColumn Header="Marca" Binding="{Binding Marca}" Width="100"/>
+                        <DataGridTemplateColumn Header="Marca" Width="150">
+
+                            <!-- 🔹 MODO NORMAL (NO EDITANDO) -->
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Marca}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+
+                            <!-- 🔹 MODO EDICIÓN (COMBO) -->
+                            <DataGridTemplateColumn.CellEditingTemplate>
+                                <DataTemplate>
+                                    <ComboBox
+                ItemsSource="{Binding MarcasDisponibles}"
+                DisplayMemberPath="strDescripcion"
+                SelectedValuePath="iMarcaId"
+                SelectedValue="{Binding Marca, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                IsEditable="False"
+            />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellEditingTemplate>
+
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="200"/>
                         <DataGridCheckBoxColumn Header="Serv" Binding="{Binding Servicio}" Width="60"/>
                         <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}" Width="80"/>
@@ -423,6 +473,26 @@
                         <DataGridTextColumn Header="Subtotal S/Desc" Binding="{Binding SubTotalSinDescuento}" Width="140"/>
                         <DataGridTextColumn Header="Impuesto" Binding="{Binding Impuesto}" Width="100"/>
                         <DataGridTextColumn Header="Retención" Binding="{Binding Retencion}" Width="100"/>
+                        <DataGridTemplateColumn x:Name="colEliminar" Header="Eliminar" Width="80" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Focusable" Value="False"/>
+                                    <Setter Property="IsTabStop" Value="False"/>
+                                </Style>
+                            </DataGridTemplateColumn.CellStyle>
+
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="X"
+                    Background="Red"
+                    Foreground="White"
+                    Padding="5"
+                    Focusable="False"
+                    IsTabStop="False"
+                    Click="BtnEliminarFila_Click"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -444,7 +514,7 @@
             CornerRadius="8"
             Padding="10"
             Margin="5"
-            Background="#111">
+            Background="{StaticResource ColorGrisOscuro}">
 
                 <StackPanel>
 
@@ -475,12 +545,12 @@
                                 <!-- MARCA -->
                                 <DataGridTextColumn Header="Marca"
                             Width="*"
-                            Binding="{Binding Marca, Mode=TwoWay}" />
+                            Binding="{Binding Marca, Mode=TwoWay}" IsReadOnly="True"/>
 
                                 <!-- PRECIO -->
                                 <DataGridTextColumn Header="Precio"
                             Width="*"
-                            Binding="{Binding Precio, Mode=TwoWay, StringFormat=N2}" />
+                            Binding="{Binding Precio, Mode=TwoWay, StringFormat=N2}" IsReadOnly="True"/>
 
                                 <!-- ACCIONES -->
                                 <DataGridTemplateColumn Header="Acción" Width="2*">
@@ -523,7 +593,7 @@
             CornerRadius="8"
             Padding="10"
             Margin="5"
-            Background="#111">
+            Background="{StaticResource ColorGrisOscuro}">
 
                 <StackPanel x:Name="panelOMConfig">
 
@@ -535,25 +605,37 @@
                     <!-- UNIDAD -->
                     <TextBlock Text="Unidad"/>
                     <ComboBox x:Name="cmbUnidadOM"
-          ItemsSource="{Binding DataContext.Unidades, RelativeSource={RelativeSource AncestorType=Window}}"
-          DisplayMemberPath="Descripcion"
-          SelectedValuePath="Id"
-          SelectionChanged="cmbUnidadOM_SelectionChanged"/>
+                              ItemsSource="{Binding DataContext.Unidades, RelativeSource={RelativeSource AncestorType=Window}}"
+                              DisplayMemberPath="Descripcion"
+                              SelectedValuePath="Id"
+                              SelectionChanged="cmbUnidadOM_SelectionChanged"
+                              IsEditable="True"
+                              IsTextSearchEnabled="True"
+                              StaysOpenOnEdit="True"
+                              IsTextSearchCaseSensitive="False"/>
                     <!-- FAMILIA -->
                     <TextBlock Text="Familia"/>
                     <ComboBox x:Name="cmbFamiliaOM"
-          ItemsSource="{Binding DataContext.Familias, RelativeSource={RelativeSource AncestorType=Window}}"
-          DisplayMemberPath="Descripcion"
-          SelectedValuePath="Id"
-          SelectionChanged="cmbFamiliaOM_SelectionChanged"/>
+                              ItemsSource="{Binding DataContext.Familias, RelativeSource={RelativeSource AncestorType=Window}}"
+                              DisplayMemberPath="Descripcion"
+                              SelectedValuePath="Id"
+                              SelectionChanged="cmbFamiliaOM_SelectionChanged"
+                              IsEditable="True"
+                              IsTextSearchEnabled="True"
+                              StaysOpenOnEdit="True"
+                              IsTextSearchCaseSensitive="False"/>
                     <!-- GRUPO -->
                     <TextBlock Text="Grupo"/>
 
                     <ComboBox x:Name="cmbGrupoOM"
-          ItemsSource="{Binding DataContext.Grupos, RelativeSource={RelativeSource AncestorType=Window}}"
-          DisplayMemberPath="Descripcion"
-          SelectedValuePath="Id"
-          SelectionChanged="cmbGrupoOM_SelectionChanged"/>
+                              ItemsSource="{Binding DataContext.Grupos, RelativeSource={RelativeSource AncestorType=Window}}"
+                              DisplayMemberPath="Descripcion"
+                              SelectedValuePath="Id"
+                              SelectionChanged="cmbGrupoOM_SelectionChanged" 
+                              IsEditable="True"
+                              IsTextSearchEnabled="True"
+                              StaysOpenOnEdit="True"
+                              IsTextSearchCaseSensitive="False"/>
                 </StackPanel>
             </Border>
 
@@ -563,8 +645,7 @@
             CornerRadius="8"
             Padding="10"
             Margin="5"
-            Background="#111">
-
+            Background="{StaticResource ColorGrisOscuro}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Sub Total:" Width="120"/>

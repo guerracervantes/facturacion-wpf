@@ -1,0 +1,479 @@
+﻿<Window x:Class="GOVI_FACTURA.ComprasEntradaAlmacen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GOVI_FACTURA"
+        mc:Ignorable="d"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
+        Title="ComprasEntradaAlmacen" Height="800" Width="1500"
+        Background="Black">
+
+    <Window.Resources>
+
+        <!-- 🎨 Colores principales -->
+        <SolidColorBrush x:Key="ColorFondoNegro" Color="#0B0B0B"/>
+        <SolidColorBrush x:Key="ColorGrisOscuro" Color="#1E1E1E"/>
+        <SolidColorBrush x:Key="ColorGrisMedio" Color="#2A2A2A"/>
+        <SolidColorBrush x:Key="ColorGrisClaro" Color="#3A3A3A"/>
+
+        <SolidColorBrush x:Key="ColorAmarillo" Color="#FFC107"/>
+        <SolidColorBrush x:Key="ColorAmarilloHover" Color="#FFD54F"/>
+
+        <SolidColorBrush x:Key="ColorTextoBlanco" Color="#F5F5F5"/>
+        <SolidColorBrush x:Key="ColorTextoGris" Color="#BDBDBD"/>
+        <SolidColorBrush x:Key="ColorTextoNegro" Color="Black"/>
+
+
+        <!-- Textos -->
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource ColorAmarillo}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{StaticResource ColorGrisOscuro}"/>
+            <Setter Property="Foreground" Value="{StaticResource ColorTextoBlanco}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ColorGrisClaro}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="CaretBrush" Value="{StaticResource ColorAmarillo}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ColorAmarillo}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+        <!-- ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource ColorAmarillo}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ColorGrisClaro}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+
+            <Style.Triggers>
+
+                <!-- Hover -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ColorAmarillo}"/>
+                </Trigger>
+
+                <!-- Focus -->
+                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource ColorAmarillo}"/>
+                </Trigger>
+
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="{StaticResource ColorAmarillo}"/>
+            <Setter Property="Background" Value="{StaticResource ColorGrisOscuro}"/>
+            <Setter Property="Padding" Value="8,5"/>
+
+            <Style.Triggers>
+
+                <!-- Hover -->
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" Value="#2C2C2C"/>
+                </Trigger>
+
+                <!-- Seleccionado -->
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#3A3A3A"/>
+                </Trigger>
+
+            </Style.Triggers>
+        </Style>
+
+
+        <!-- DatePicker -->
+        <Style TargetType="DatePicker">
+            <Setter Property="Background" Value="{StaticResource ColorGrisOscuro}"/>
+            <Setter Property="Foreground" Value="{StaticResource ColorTextoBlanco}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ColorGrisClaro}"/>
+        </Style>
+
+        <Style TargetType="DatePickerTextBox">
+            <Setter Property="Foreground" Value="{StaticResource ColorTextoBlanco}"/>
+            <Setter Property="Background" Value="{StaticResource ColorFondoNegro}"/>
+        </Style>
+
+
+        <!-- Botones -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource ColorAmarillo}"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="MinHeight" Value="25"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="8"
+                        Padding="{TemplateBinding Padding}"
+                        BorderBrush="#E0A800"
+                        BorderThickness="1">
+
+                            <!-- 🔥 SOMBRA -->
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black"
+                                          BlurRadius="8"
+                                          ShadowDepth="2"
+                                          Opacity="0.5"/>
+                            </Border.Effect>
+
+                            <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <!-- 🔥 HOVER -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#FFC107"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#FFD54F"/>
+                            </Trigger>
+
+                            <!-- 🔥 CLICK -->
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#FF8F00"/>
+                                <Setter TargetName="bd" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.97" ScaleY="0.97"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+
+                            <!-- 🔥 DISABLED -->
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <!-- DataGrid -->
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="#0D0D0D"/>
+            <!-- fondo general -->
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#333"/>
+            <Setter Property="BorderThickness" Value="1"/>
+
+            <!-- Filas -->
+            <Setter Property="RowBackground" Value="#121212"/>
+            <Setter Property="AlternatingRowBackground" Value="#1A1A1A"/>
+
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="EnableRowVirtualization" Value="True"/>
+            <Setter Property="EnableColumnVirtualization" Value="True"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="{StaticResource ColorGrisMedio}"/>
+            <Setter Property="Foreground" Value="{StaticResource ColorAmarillo}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ColorGrisClaro}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="Background" Value="{StaticResource ColorGrisOscuro}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Height" Value="30"/>
+
+            <Style.Triggers>
+
+                <!-- Hover -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource ColorGrisMedio}"/>
+                </Trigger>
+
+                <!-- Selección -->
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#3A2A00"/>
+                    <Setter Property="Foreground" Value="{StaticResource ColorAmarillo}"/>
+                </Trigger>
+
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Encabezado -->
+            <RowDefinition Height="Auto"/>
+            <!-- Proveedor -->
+            <RowDefinition Height="*"/>
+            <!-- DataGrid -->
+            <RowDefinition Height="Auto"/>
+            <!-- Totales -->
+        </Grid.RowDefinitions>
+
+        <!-- ===================== ENCABEZADO ===================== -->
+        <Border Grid.Row="0"
+            BorderBrush="#FAA219"
+            BorderThickness="2"
+            CornerRadius="8"
+            Padding="10"
+            Margin="0,0,0,10"
+            Background="{StaticResource ColorGrisOscuro}">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Fecha -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Fecha"/>
+                    <TextBox x:Name="txtFecha"/>
+                </StackPanel>
+
+                <!-- Orden y Factura -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <StackPanel Margin="5">
+                        <TextBlock Text="Orden de Compra"/>
+                        <TextBox x:Name="txtOrdenCompra" Width="120" 
+                                 LostFocus="txtOrdenCompra_LostFocus"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="5">
+                        <TextBlock Text="Factura"/>
+                        <TextBox x:Name="txtFactura" Width="120"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Datos derecha -->
+                <Grid Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="Clave de Acceso"/>
+                        <TextBox x:Name="txtClaveAcceso"/>
+
+                        <TextBlock Text="Total Mes"/>
+                        <TextBox x:Name="txtTotalMes"/>
+
+                        <TextBlock Text="Límite"/>
+                        <TextBox x:Name="txtLimite"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Disponible"/>
+                        <TextBox x:Name="txtDisponible"/>
+
+                        <TextBlock Text="Pendiente"/>
+                        <TextBox x:Name="txtPendiente"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <RadioButton Content="Localización" Margin="5" Foreground="#EAE6DD"/>
+                            <RadioButton Content="Captura" Margin="5" Foreground="#EAE6DD"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <Button Content="Ordenar" Margin="5"/>
+                            <Button Content="Guardar"  Margin="5" Click="btnGuardar_Click"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- ===================== PROVEEDOR ===================== -->
+        <Border Grid.Row="1"
+            BorderBrush="#FAA219"
+            BorderThickness="2"
+            CornerRadius="8"
+            Padding="10"
+            Margin="0,0,0,10"
+            Background="{StaticResource ColorGrisOscuro}">
+
+            <UniformGrid Columns="7">
+                <StackPanel>
+                    <TextBlock Text="Proveedor"/>
+                    <TextBox x:Name="txtProveedor"/>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Text="Nombre"/>
+                    <TextBox x:Name="txtNombreProv"/>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Text="Dirección"/>
+                    <TextBox x:Name="txtDireccion"/>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Text="Ciudad"/>
+                    <TextBox x:Name="txtCiudad"/>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Text="Estado"/>
+                    <TextBox x:Name="txtEstado"/>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Text="RFC"/>
+                    <TextBox x:Name="txtRFC"/>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Text="Teléfono"/>
+                    <TextBox x:Name="txtTelefono"/>
+                </StackPanel>
+            </UniformGrid>
+        </Border>
+
+        <!-- ===================== DATAGRID ===================== -->
+        <Border Grid.Row="2"
+            BorderBrush="#FAA219"
+            BorderThickness="2"
+            CornerRadius="8"
+            Padding="10"
+            Margin="0,0,0,10"
+            Background="{StaticResource ColorGrisOscuro}">
+
+            <DataGrid x:Name="dgDetalle" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Producto" Binding="{Binding Producto}"/>
+                    <DataGridTextColumn Header="Marca" Binding="{Binding Marca}"/>
+                    <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="200"/>
+                    <DataGridTextColumn Header="Inventario" Binding="{Binding Inventario}"/>
+                    <DataGridTextColumn Header="Pend. en OC" Binding="{Binding PendienteOC}"/>
+                    <DataGridTextColumn Header="Cant. Surtida" Binding="{Binding CantidadSurtida}"/>
+                    <DataGridTextColumn Header="Precio" Binding="{Binding Precio}"/>
+                    <DataGridTextColumn Header="Importe" Binding="{Binding Importe}"/>
+                    <DataGridTextColumn Header="Loc" Binding="{Binding Loc}"/>
+                    <DataGridTextColumn Header="Descuento" Binding="{Binding Descuento}"/>
+                    <DataGridTextColumn Header="Total sin IVA" Binding="{Binding TotalSinIVA}"/>
+                    <DataGridTextColumn Header="IVA" Binding="{Binding IVA}"/>
+                    <DataGridTextColumn Header="Retención" Binding="{Binding Retencion}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- ===================== TOTALES ===================== -->
+        <Grid Grid.Row="3" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Pendientes -->
+            <Border Grid.Column="0"
+                BorderBrush="#FAA219"
+                BorderThickness="2"
+                CornerRadius="8"
+                Padding="10"
+                Margin="5"
+                Background="{StaticResource ColorGrisOscuro}">
+
+                <UniformGrid Columns="5">
+                    <StackPanel>
+                        <TextBlock Text="Pendiente 1"/>
+                        <TextBox/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Pendiente 2"/>
+                        <TextBox/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Pendiente 3"/>
+                        <TextBox/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Pendiente 4"/>
+                        <TextBox/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Pendiente 5"/>
+                        <TextBox/>
+                    </StackPanel>
+                </UniformGrid>
+            </Border>
+
+            <!-- Totales -->
+            <Border Grid.Column="1"
+                BorderBrush="#FAA219"
+                BorderThickness="2"
+                CornerRadius="8"
+                Padding="10"
+                Margin="5"
+                Background="{StaticResource ColorGrisOscuro}">
+
+                <StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Sub Total:" Width="120"/>
+                        <TextBox x:Name="txtSubTotal" IsReadOnly="True"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Descuento:" Width="120"/>
+                        <TextBox x:Name="txtDescuento" IsReadOnly="True"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="SUBTOTAL:" Width="120"/>
+                        <TextBox x:Name="txtSubTotalFinal" IsReadOnly="True"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="IVA:" Width="120"/>
+                        <TextBox x:Name="txtIVAImporte" IsReadOnly="True"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="RETENCIÓN:" Width="120"/>
+                        <TextBox x:Name="txtRetencion" IsReadOnly="True"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Total:" Width="120"/>
+                        <TextBox x:Name="txtTotal" IsReadOnly="True"/>
+                    </StackPanel>
+
+                </StackPanel>
+            </Border>
+
+        </Grid>
+
+    </Grid>
+</Window>

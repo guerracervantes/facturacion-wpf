@@ -13,10 +13,16 @@
     <None Remove="buscar_cte.png" />
     <None Remove="flogin.png" />
     <None Remove="fondo.png" />
+    <None Remove="Img\salir.png" />
     <None Remove="login.png" />
     <None Remove="logo-chico.png" />
     <None Remove="logo_govi_inter.png" />
-    <None Remove="salir.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Img\salir.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +36,6 @@
     <Resource Include="login.png" />
     <Resource Include="logo-chico.png" />
     <Resource Include="logo_govi_inter.png" />
-    <Resource Include="salir.png" />
   </ItemGroup>
 
 </Project>

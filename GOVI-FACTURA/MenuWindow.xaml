@@ -33,9 +33,13 @@
             </MenuItem>
 
             <MenuItem Header="Compras">
-                <MenuItem Header="Compras" Foreground="#faa219"/>
-            </MenuItem>
+                <MenuItem Header="ComprasTerceros" Foreground="#faa219" Click="MenuComprasTerceros_Click"/>
 
+                <MenuItem Header="ComprasFiliales" Foreground="#faa219" Click="MenuComprasFiliales_Click"/>
+
+                <MenuItem Header="ComprasEntradaAlmacen" Foreground="#faa219" Click="MenuComprasEntradaAlmacen_Click"/>
+            </MenuItem>
+            
             <MenuItem Header="Reportes">
                 <MenuItem Header="Ventas" Foreground="#faa219" />
             </MenuItem>
@@ -175,103 +179,93 @@
 
                     </Grid>
 
-
                     <!-- ================= COMPRAS ================= -->
                     <Grid Width="210" Height="120" Margin="5" Background="Transparent">
 
                         <Border x:Name="btnCompras"
-                    Width="115"
-                    Height="115"
-                    Background="#FAA219"
-                    CornerRadius="10"
-                    HorizontalAlignment="Left"
-                    MouseLeftButtonDown="BtnCompras_Click">
+            Width="115"
+            Height="115"
+            Background="#FAA219"
+            CornerRadius="10"
+            HorizontalAlignment="Left"
+            MouseLeftButtonDown="BtnCompras_Click">
 
                             <Border.RenderTransform>
                                 <TranslateTransform x:Name="moveCompras"/>
                             </Border.RenderTransform>
 
                             <TextBlock Text="Compras"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"/>
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"/>
                         </Border>
 
-                        <UniformGrid x:Name="subCompras"
-                         Columns="3"
-                         Rows="3"
-                         Width="105"
-                         Height="105"
-                         Opacity="0"
-                         Visibility="Collapsed"
-                         HorizontalAlignment="Right"
-                         VerticalAlignment="Center">
+                        <StackPanel x:Name="subCompras"
+                Width="160"
+                Orientation="Vertical"
+                Opacity="0"
+                Visibility="Collapsed"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center">
 
-                            <Button Width="32" Height="32" Margin="1"/>
-                            <Button Width="32" Height="32" Margin="1"/>
-                            <Button Width="32" Height="32" Margin="1"/>
-                            <Button Width="32" Height="32" Margin="1"/>
-                            <Button Width="32" Height="32" Margin="1"/>
-                            <Button Width="32" Height="32" Margin="1"/>
-                            <Button Width="32" Height="32" Margin="1"/>
-                            <Button Width="32" Height="32" Margin="1"/>
-                            <Button Width="32" Height="32" Margin="1"/>
+                            <Button Height="35" Margin="2"
+                                    Content="Compras Terceros"
+                                    Click="MenuComprasTerceros_Click"/>
 
-                        </UniformGrid>
+                            <Button Height="35" Margin="2"
+                                    Content="Compras Filiales"
+                                    Click="MenuComprasFiliales_Click"/>
+
+                            <Button Height="35" Margin="2"
+                                    Content="Entrada Almacen"
+                                    Click="MenuComprasEntradaAlmacen_Click"/>
+
+                        </StackPanel>
 
                         <Grid.Triggers>
 
-                            <!-- ENTRA -->
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
                                     <Storyboard>
 
-                                        <ObjectAnimationUsingKeyFrames
-                                Storyboard.TargetName="subCompras"
-                                Storyboard.TargetProperty="Visibility">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="subCompras"
+                                                   Storyboard.TargetProperty="Visibility">
                                             <DiscreteObjectKeyFrame KeyTime="0:0:0"
-                                    Value="{x:Static Visibility.Visible}"/>
+                                                Value="{x:Static Visibility.Visible}"/>
                                         </ObjectAnimationUsingKeyFrames>
 
-                                        <DoubleAnimation
-                                Storyboard.TargetName="subCompras"
-                                Storyboard.TargetProperty="Opacity"
-                                From="0" To="1"
-                                Duration="0:0:0.02"/>
+                                        <DoubleAnimation Storyboard.TargetName="subCompras"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="0" To="1"
+                                     Duration="0:0:0.1"/>
 
-                                        <DoubleAnimation
-                                Storyboard.TargetName="moveCompras"
-                                Storyboard.TargetProperty="X"
-                                To="-95"
-                                Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetName="moveCompras"
+                                     Storyboard.TargetProperty="X"
+                                     To="-95"
+                                     Duration="0:0:0.2"/>
 
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
 
-                            <!-- SALE -->
                             <EventTrigger RoutedEvent="MouseLeave">
                                 <BeginStoryboard>
                                     <Storyboard>
 
-                                        <DoubleAnimation
-                                Storyboard.TargetName="subCompras"
-                                Storyboard.TargetProperty="Opacity"
-                                To="0"
-                                Duration="0:0:0.08"/>
+                                        <DoubleAnimation Storyboard.TargetName="subCompras"
+                                     Storyboard.TargetProperty="Opacity"
+                                     To="0"
+                                     Duration="0:0:0.1"/>
 
-                                        <ObjectAnimationUsingKeyFrames
-                                Storyboard.TargetName="subCompras"
-                                Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.08"
-                                    Value="{x:Static Visibility.Collapsed}"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="subCompras"
+                                                   Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.1"
+                                                Value="{x:Static Visibility.Collapsed}"/>
                                         </ObjectAnimationUsingKeyFrames>
 
-                                        <DoubleAnimation
-                                Storyboard.TargetName="moveCompras"
-                                Storyboard.TargetProperty="X"
-                                To="0"
-                                BeginTime="0:0:0.08"
-                                Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetName="moveCompras"
+                                     Storyboard.TargetProperty="X"
+                                     To="0"
+                                     Duration="0:0:0.2"/>
 
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -280,8 +274,6 @@
                         </Grid.Triggers>
 
                     </Grid>
-
-
                     <!-- ================= REPORTES ================= -->
                     <Grid Width="210" Height="120" Margin="5">
                         <Border Width="115" Height="115" Background="#FAA219" CornerRadius="10">
